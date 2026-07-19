@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Registration</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #36d1dc, #5b86e5);
+      padding: 30px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 640px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      padding: 30px 25px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 22px;
+      color: #333;
+      font-size: 28px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #444;
+      font-size: 14px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+      font-family: inherit;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #36d1dc;
+      box-shadow: 0 0 0 3px rgba(54, 209, 220, 0.15);
+    }
+
+    textarea {
+      resize: none;
+      min-height: 85px;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #777;
+      margin-top: -8px;
+      margin-bottom: 12px;
+    }
+
+    .password-box {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .password-box input {
+      margin-bottom: 0;
+      padding-right: 60px;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: #666;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .dob-box {
+      position: relative;
+    }
+
+    .dob-box input[type="text"] {
+      padding-right: 42px;
+    }
+
+    .calendar-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      cursor: pointer;
+      user-select: none;
+      line-height: 1;
+    }
+
+    .hidden-date-input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+    }
+
+    /* Two-column grid layout */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    @media(max-width:520px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .gender-options {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 11px 2px;
+      margin-bottom: 14px;
+      min-height: 44px;
+    }
+
+    .gender-options label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 0;
+      font-weight: normal;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .gender-options input[type="radio"] {
+      width: auto;
+      margin: 0;
+      padding: 0;
+      accent-color: #36d1dc;
+      cursor: pointer;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #36d1dc;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 6px;
+    }
+
+    button:hover {
+      background: #2ab6c0;
+    }
+
+    #registerMsg {
+      text-align: center;
+      margin-top: 14px;
+      font-weight: bold;
+      min-height: 24px;
+    }
+
+    input:disabled {
+      background: #f2f2f2;
+      cursor: not-allowed;
+    }
+
+    /* Success popup modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal-box {
+      background: #fff;
+      width: 100%;
+      max-width: 380px;
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: pop 0.25s ease;
+    }
+
+    @keyframes pop {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #e9f9ec;
+      color: #28a745;
+      font-size: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+    }
+
+    .modal-box h3 {
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .modal-box p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-buttons button {
+      margin-top: 0;
+    }
+
+    .btn-secondary {
+      background: #888;
+    }
+
+    .btn-secondary:hover {
+      background: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>User Registration</h2>
+
+    <form id="registerForm">
+      <div class="form-row">
+        <div>
+          <label>First Name</label>
+          <input type="text" id="first_name" placeholder="Enter first name" required />
+        </div>
+        <div>
+          <label>Last Name</label>
+          <input type="text" id="last_name" placeholder="Enter last name" disabled required />
+        </div>
+      </div>
+      <div class="hint">Last Name will be enabled after entering First Name.</div>
+
+      <div class="form-row">
+        <div>
+          <label>Email ID</label>
+          <input type="email" id="email_id" placeholder="Enter email" required />
+        </div>
+        <div>
+          <label>Username</label>
+          <input type="text" id="username" placeholder="Choose username" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label>Gender</label>
+          <div class="gender-options">
+            <label><input type="radio" name="gender" value="Male" required /> Male</label>
+            <label><input type="radio" name="gender" value="Female" required /> Female</label>
+            <label><input type="radio" name="gender" value="Others" required /> Others</label>
+          </div>
+        </div>
+        <div>
+          <label>Date of Birth</label>
+          <div class="dob-box">
+            <input type="text" id="dob" placeholder="dd/mm/yyyy" maxlength="10" inputmode="numeric" required />
+            <span class="calendar-btn" onclick="openDatePicker('dob_hidden')">&#128197;</span>
+            <input type="date" id="dob_hidden" class="hidden-date-input" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label>Password</label>
+          <div class="password-box">
+            <input type="password" id="password" placeholder="Enter password" required />
+            <span class="toggle-btn" onclick="togglePassword('password', this)">Show</span>
+          </div>
+        </div>
+        <div>
+          <label>Confirm Password</label>
+          <div class="password-box">
+            <input type="password" id="confirm_password" placeholder="Re-enter password" required />
+            <span class="toggle-btn" onclick="togglePassword('confirm_password', this)">Show</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div>
+          <label>Phone Number</label>
+          <input type="text" id="phone_num" placeholder="Enter 10-digit phone number" maxlength="10" required />
+        </div>
+        <div>
+          <label>Pincode</label>
+          <input type="text" id="pincode" placeholder="Enter 6-digit pincode" maxlength="6" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="full-width">
+          <label>Address</label>
+          <textarea id="address" placeholder="Enter address" required></textarea>
+        </div>
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
+
+    <p id="registerMsg"></p>
+  </div>
+
+  <!-- Success popup -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-box">
+      <div class="modal-icon">&#10003;</div>
+      <h3>Registration Successful</h3>
+      <p>Your account has been created successfully.</p>
+      <div class="modal-buttons">
+        <button class="btn-secondary" onclick="closeSuccessModal()">Register Another</button>
+        <button onclick="window.location.href='viewusers.html'">View Registered Users</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firstNameInput = document.getElementById("first_name");
+    const lastNameInput = document.getElementById("last_name");
+
+    firstNameInput.addEventListener("input", function () {
+      if (this.value.trim() !== "") {
+        lastNameInput.disabled = false;
+      } else {
+        lastNameInput.disabled = true;
+        lastNameInput.value = "";
+      }
+    });
+
+    function togglePassword(id, element) {
+      const input = document.getElementById(id);
+      if (input.type === "password") {
+        input.type = "text";
+        element.textContent = "Hide";
+      } else {
+        input.type = "password";
+        element.textContent = "Show";
+      }
+    }
+
+    // Auto-insert "/" separators as the user types dd/mm/yyyy
+    const dobInput = document.getElementById("dob");
+    dobInput.addEventListener("input", function () {
+      let digits = this.value.replace(/\D/g, "").slice(0, 8);
+      let formatted = digits;
+      if (digits.length > 4) {
+        formatted = digits.slice(0, 2) + "/" + digits.slice(2, 4) + "/" + digits.slice(4);
+      } else if (digits.length > 2) {
+        formatted = digits.slice(0, 2) + "/" + digits.slice(2);
+      }
+      this.value = formatted;
+    });
+
+    function isValidDDMMYYYY(value) {
+      const match = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+      if (!match) return false;
+
+      const day = Number(match[1]);
+      const month = Number(match[2]);
+      const year = Number(match[3]);
+
+      if (year < 1900 || year > new Date().getFullYear()) return false;
+      if (month < 1 || month > 12) return false;
+
+      const daysInMonth = new Date(year, month, 0).getDate();
+      if (day < 1 || day > daysInMonth) return false;
+
+      return true;
+    }
+
+    function openDatePicker(hiddenId) {
+      const hidden = document.getElementById(hiddenId);
+      if (hidden.showPicker) {
+        hidden.showPicker();
+      } else {
+        hidden.focus();
+        hidden.click();
+      }
+    }
+
+    document.getElementById("dob_hidden").addEventListener("change", function () {
+      if (this.value) {
+        const [y, m, d] = this.value.split("-");
+        document.getElementById("dob").value = `${d}/${m}/${y}`;
+      }
+    });
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem("users")) || [];
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    function closeSuccessModal() {
+      document.getElementById("successModal").style.display = "none";
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const first_name = document.getElementById("first_name").value.trim();
+      const last_name = document.getElementById("last_name").value.trim();
+      const email_id = document.getElementById("email_id").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const genderInput = document.querySelector('input[name="gender"]:checked');
+      const gender = genderInput ? genderInput.value : "";
+      const dob = document.getElementById("dob").value;
+      const password = document.getElementById("password").value;
+      const confirm_password = document.getElementById("confirm_password").value;
+      const phone_num = document.getElementById("phone_num").value.trim();
+      const pincode = document.getElementById("pincode").value.trim();
+      const address = document.getElementById("address").value.trim();
+
+      const msg = document.getElementById("registerMsg");
+      msg.innerHTML = "";
+
+      if (first_name === "") {
+        msg.style.color = "red";
+        msg.innerHTML = "First Name is required";
+        return;
+      }
+
+      if (last_name === "") {
+        msg.style.color = "red";
+        msg.innerHTML = "Last Name is required";
+        return;
+      }
+
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email_id)) {
+        msg.style.color = "red";
+        msg.innerHTML = "Enter a valid email address";
+        return;
+      }
+
+      if (gender === "") {
+        msg.style.color = "red";
+        msg.innerHTML = "Please select a gender";
+        return;
+      }
+
+      if (!isValidDDMMYYYY(dob)) {
+        msg.style.color = "red";
+        msg.innerHTML = "Enter a valid Date of Birth (dd/mm/yyyy)";
+        return;
+      }
+
+      const phonePattern = /^[0-9]{10}$/;
+      if (!phonePattern.test(phone_num)) {
+        msg.style.color = "red";
+        msg.innerHTML = "Phone number must be exactly 10 digits";
+        return;
+      }
+
+      const pincodePattern = /^[0-9]{6}$/;
+      if (!pincodePattern.test(pincode)) {
+        msg.style.color = "red";
+        msg.innerHTML = "Pincode must be exactly 6 digits";
+        return;
+      }
+
+      if (password.length < 4) {
+        msg.style.color = "red";
+        msg.innerHTML = "Password must be at least 4 characters";
+        return;
+      }
+
+      if (password !== confirm_password) {
+        msg.style.color = "red";
+        msg.innerHTML = "Password and Confirm Password do not match";
+        return;
+      }
+
+      let users = getUsers();
+
+      const userExists = users.some(user => user.username.toLowerCase() === username.toLowerCase());
+      if (userExists) {
+        msg.style.color = "red";
+        msg.innerHTML = "Username already exists";
+        return;
+      }
+
+      const newUser = {
+        id: Date.now(),
+        first_name,
+        last_name,
+        email_id,
+        username,
+        gender,
+        dob,
+        password,
+        phone_num,
+        pincode,
+        address
+      };
+
+      users.push(newUser);
+      saveUsers(users);
+
+      document.getElementById("registerForm").reset();
+      lastNameInput.disabled = true;
+
+      document.getElementById("successModal").style.display = "flex";
+    });
+  </script>
+
+</body>
+
+</html>
